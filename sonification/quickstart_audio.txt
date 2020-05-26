@@ -1,0 +1,84 @@
+full instructions with introduction can be found in 
+instructions_audio.txt.  this file provides the minimum information 
+needed to run the Sonification of Solar Harmonics (SoSH) Tool.  other 
+important information regarding pure data is found in README_audio.txt, 
+especially modifications required for running in windows.
+
+if you are using the version of the SoSH Tool that includes demo data 
+files, these will already be found in the data directory that was 
+unpacked with the zip archive, in which case you may skip to step 2 
+below.  the demo data files are the following three: mdi.average.modes, 
+mdi.1216d_l=2_m=1_datar.wav and mdi.1216d_l=2_m=1_datai.wav .
+
+
+follow these steps:
+
+1) download data
+
+the data are available at http://sun.stanford.edu/~tplarson/audio/, 
+where you will find separate directories for MDI and HMI.  within each, 
+you will find a series of directories that are day numbers suffixed with 
+'d'.  the day number corresponds to the first day of the 72 day 
+timeseries.  day number 1216 was 1 may 1996.  a full table converting 
+day numbers to dates can be found at the above url as well.
+
+clicking on a directory will show two ascii tables containing the mode 
+paramaters; the file <instrument>.<daynumber>.modes must be downloaded.  
+the second and larger file, with ".msplit" appended to the name, is only 
+needed to use different frequency intervals for each m.  this is not 
+needed by default, but its use is discussed in the full instructions.
+
+next, click on the "wavfiles" subdirectory, where you will find a 
+selection of modes labelled by l and m.  except for m=0, each mode has 
+both a real and an imaginary part, labelled by "datar" and "datai" 
+respectively.  pick an assortment of modes and download them to your 
+data directory.
+
+alternatively, averaged mode parameters can be found directly in each of 
+the "MDI" and "HMI" directories.  you may elect to use these averaged 
+parameters for all day numbers.  this option is the default for most 
+patches.
+
+
+2) using the patch
+
+open the patch modefilter_standalone.pd .  if you are not using the data 
+directory which was unpacked with the zip archive, you will need to set 
+the path to the directory where you put the data.  do this by clicking 
+the light blue bang at lower left.  a dialog box will open; just select 
+any file in your data directory and the object [set-directory] will 
+strip the file name and output the path.  you should now see your path 
+show up in the message box at right.  if you now save the patch file, 
+this will be saved as your default data directory and you won't need to 
+set it any more.
+
+next, click on the message box with "pd dsp 1", which will turn on 
+digital signal processing (DSP).  finally, the inputs you must provide 
+are the day number corresponding to the 72 day timeseries, the spherical 
+harmonic degree l, the radial order n, and the azimuthal order m.  note 
+that even if you want to leave one of these at its default value of 
+zero, you must still click on the number box and enter 0.  now, to 
+search for this mode, click the green bang at the upper left.  if found, 
+the input arrays will be loaded, the fft will run, the gain will be 
+generated, the gain and the fft will be multiplied and shifted before 
+being inverse transformed, and the filtered audio will play.  to hear 
+it, enter a number for the output level.  you will likely want to adjust 
+the playback sample rate and downshift factor. you can turn off playback 
+by clicking the toggle.  you may also elect to save the output as a wav 
+file file by clicking the light blue bang at lower right.
+
+EXAMPLE: if using the demo data files, simply turn on DSP and then enter 
+the following 4 integers at the top of the patch: 1 for degree l, 21 for 
+radial order n, 1 for azimuthal order m, and 1216 for day number.  do 
+press enter each time.  once done, click the circle beneath "search for 
+modes".  at lower right, enter a number for the output level.  once the 
+fft completes, the sound will play.  it will be quite high.  to hear the 
+effect of downshifting, enter 4 for the downshift factor.
+
+
+3) skip to the end
+
+open example_sum.pd to see an example of how to play 5 modes at once.  
+first reset the data directory if needed.  set the day number for all 
+five, and then specify the separate modes along the right edge.  details 
+can be found in section 5 of the full instructions.

@@ -1,0 +1,56 @@
+
+this file provides instructions for using the soshdata python module to 
+retrieve solar data for use with the Sonification of Solar Harmonics 
+(SoSH) Tool.  refer to README_visual.txt to ensure you have the needed 
+modules installed.
+
+two types of data are needed.  ascii tables containing mode parameters 
+and wav files containing the raw acoustic data.  to retrieve these, 
+first start an ipython session.  then enter these three lines:
+
+import soshdata
+soshdata.getmodeparms()
+soshdata.getwavfiles()
+
+after each function call you will be prompted to enter an instrument and 
+a day number.  the two instruments available are the Michelson Doppler 
+Imager (MDI) and the Helioseismic and Magnetic Imager (HMI). when 
+prompted, enter either MDI or HMI (case insensitive).
+
+for day number, enter one from the list found in daynumbers.txt.  MDI 
+data spans day numbers 1216-6616.  HMI data begins on day number 6328 
+and is ongoing, currently available through day number 9424.  in the 
+case of mode parameters, you may enter "average" instead of a day 
+number, in which case an averaged mode parameter file is downloaded.  in 
+the SoSH Tool, you may elect to use such a file for all day numbers.
+
+for the wav files, you will additionally be prompted to enter a 
+spherical harmonic degree (l) and azimuthal order (m).  for degree enter 
+a number l=0-300.  for order enter a number m=0-l.  you may enter a 
+negative value for m, but the resulting files will be the same, since 
+they contain both signs of m already.
+
+the native format of the data is the flexible image transport system 
+(fits) and all m's for a given l are stored in the same file.  the 
+getwavefiles() function will retrieve this file, and then pick the m you 
+have requested and write it out as two wav files, one each for its real 
+and imaginary parts (m=0 has only a real part).  if you subsequently 
+request the same l and a different m, the fits file will already exist 
+and not need to be downloaded.  if you prefer for fits files to be 
+deleted every time, instead run soshdata.getwavfiles(delfits=True).
+
+instead of waiting for the functions to prompt you, you may specify 
+their parameters.  for example,
+
+soshdata.getwavfile(instrument='mdi',daynumber=1216,l=10,m=5) or 
+soshdata.getmodeparms(instrument='hmi',daynumber='average',lmin=50,lmax=100)
+
+the last two parameters shown for getmodeparms() allows you to save some 
+disk space by limiting how many degrees are written into the "msplit" 
+file.  this file is not strictly required, however, and its creation can 
+be disabled altogther by specifying makemsplit=False.  for a full 
+explanation of the use of the msplit file, see instructions_audio.txt 
+that came with the SoSH tool.
+
+the order of parameters specified with "=" is unimportant.
+

@@ -1,0 +1,300 @@
+Visualizing the Sun:
+An Introduction to the SoshPy Visualization Package
+
+a more extensive discussion of helioseismology with added graphics can 
+be found at http://solar-center.stanford.edu/SoSH/ .  short instructions 
+can be found in quickstart_visual.txt .
+
+the study of oscillations inside the sun is called helioseismology.  in 
+particular, we are here concerned with acoustic waves for which the sun 
+provides a resonant cavity.  the Sonification of Solar Harmonics (SoSH) 
+Project is a collaborative research initiative that seeks to transform 
+helioseismology into a listening experience for the scientist and 
+nonscientist alike.  it has developed the SoSH Tool, which is able to 
+sonify solar acoustic data by filtering and transposing it up to the 
+range of human hearing.  the SoshPy Visualization Package was created to 
+provide complementary graphical representations of the solar harmonics 
+being sonified.
+
+in what follows we provide a brief discussion of helioseismology, which 
+augments the discussion in the documentation provided with the SoSH Tool 
+(instructions_audio.txt).  we then move on to a detailed description of 
+the included python module and the various scripts that use it.
+
+
+Section 1: Helioseismology
+
+consider that we are here concerned with sound, which is simply the 
+coherent vibration of matter.  now imagine a plasma element (a chunk of 
+matter) at the surface of the sun.  in response to a given mode, which 
+inhabits the entire sun, this single plasma element will oscillate at 
+the mode frequency.  in other words, it moves back and forth; some part 
+of this motion will be in the radial direction, some in the latitudinal 
+direction, and some in the longitudinal direction.  a model can tell us 
+how much of the motion lies in each direction.  we call the radial 
+motion the vertical displacement, and we put the latitudinal and 
+longitudinal components of the motion together to make the horizontal 
+displacement.
+
+now, how are we to measure this displacement?  actually, it turns out to 
+be much easier to measure the speed of our plasma element, which is 
+simply the rate at which the displacment is changing.  in mathematical 
+terms, we say the velocity of the plasma element is the derivative of 
+its position.  since the plasma element is moving in response to one of 
+the sun's harmonics, it can be modeled as a simple harmonic oscillator.  
+in other words, its motion is mathematically equivalent to the motion of 
+a weight attached to a spring.  in particular, the model tells us that 
+the magnitude of the the plasma element's velocity is equal to the 
+magnitude of its displacement multiplied by its frequency, which is 
+simply the mode frequency.
+
+it is the velocity of the plasma element that we are able to measure.  
+the details of this measurement are beyond the scope of this discussion, 
+but in short we are actually measuring the frequency of spectral lines 
+of atoms at the solar surface.  for plasma at rest, these spectral lines 
+have precise frequencies that can be measured in a laboratory.  the 
+motion of the plasma causes these frequencies to be shifted slightly.  
+this is called the doppler effect, and it is exactly the same phenomenon 
+that you can observe with sound waves when a siren drives past: when the 
+siren is approaching it sounds higher, and when it is moving away it 
+sounds lower.  we use the doppler effect to create velocity images of 
+the sun's surface, and for this reason we call them dopplergrams.  each 
+pixel of the image corresponds to one of our plasma elements, and the 
+pixel value tells us how fast that element is moving toward or away from 
+the observer.
+
+here we run into a fundamental limitation of our method of observation. 
+we would like to know both the vertical and horizontal components of the 
+velocity.  unfortunately, a dopplergram only gives us the velocity along 
+the observer's line of sight.  at the center of the solar image, this is 
+exactly the vertical component, and at the very edge, it is the 
+horizontal component.  everywhere else we measure a mix of the two, and 
+nowhere can we measure both of them.  this is one of the reasons we have 
+to rely on a model.
+
+so what quantity should we plot to represent a mode?  it turns out that 
+for a large majority of modes, the horizontal component is very small 
+compared to the vertical component at the surface, and for many purposes 
+can be neglected entirely.  hence, by default we will show the vertical 
+component of velocity only.  the scripts, however, are also able to plot 
+the latitudinal and longitudinal components, as well as these two 
+combined into the total horizontal component.  they can also plot the 
+magnitude of the total velocity, as well this magnitude squared.
+
+we are also able to plot either a surface view or an interior view.  in 
+the latter case, we will show a plane containing the solar rotation 
+axis.  also in this case we plot the velocity scaled by the square root 
+of the background density.  this is for two reasons.  firstly, since the 
+velocities drop off rapidly with depth while the density increases 
+rapidly, the quantity plotted shows visible variations throughout the 
+interior.  secondly, the square of this scaled velocity is actually 
+equal to the energy density of the mode.
+
+note that for every quantity plotted, the colormap will be scaled to use 
+the full range of the data.  therefore, in a surface view, the velocity 
+squared is indistinguishable from the energy density, because the 
+background mass density is constant over the solar surface.  similarly, 
+for plots of single modes, we do not scale the displacement amplitudes 
+by frequency to get a velocity, because this would also be invisible.  
+when we begin adding modes together, however, we must properly account 
+for their relative amplitudes, so in this case the frequency scaling is 
+necessary because the frequency will be different for different modes.
+
+
+Section 2: Surface Views - drawharmonics.py and addharmonics.py
+
+for instructions on running these scripts, see the quickstart guide.  in 
+what follows i give a more detailed account of how they work.  we start 
+with drawharmonics.py, which plots surface views of single modes.
+
+but first we need a small amount of mathematical background.  an 
+oscillation mode on the sun, also known as a harmonic, is given by the 
+product of a function of latitude and longitude and another function of 
+radius only.  the first function is called a spherical harmonic, and for 
+these we have explicit analytical expressions.  the function of radius 
+is called a radial eigenfunction, and these must be computed numerically 
+by solving a system of different equations.
+
+for a surface view, we only need the spherical harmonic, which is given 
+by Ylm = Plm(cos(theta))*exp(im*phi), where the Plm's are associated 
+legendre polynomials.  in the coordinate system that we use, theta is 
+the angle from the solar rotation axis, so it different from the 
+latitude by 90 degrees.  the angle phi is exactly the longitude.  each 
+spherical harmonic is described by two integers, l and m.  the spherical 
+harmonic degree l is >= 0, and the azimuthal order m ranges from -l to 
+l.  the associated legendre polynomial, however, depends on l and |m|, 
+the absolute value of m. more details can be found in 
+instructions_audio.txt .
+
+at the beginning of the script, the arrays containing theta and phi are 
+generated by the function image2sphere().  this function is exactly the 
+same as that used to generate artificial spherical harmonics for 
+scientific analysis.  it takes as arguments the number of pixels in the 
+x and y directions (default 1000) as well as three parameters describing 
+the orientation of the solar image.  the first of these is bangle, which 
+is defined as the latitude of the subobserver point.  in other words, it 
+is the tilt of the solar rotation axis towards the observer.  similarly, 
+the parameter pangle is the tilt in the plane of the image.  these 
+angels default to 30 degrees and 0 respectively.  a third parameter, 
+distobs, gives the distance of the observer in solar radii.  it defaults 
+to 220 (the actual distance between the sun and the earth is about 215 
+solar radii), but this can be set lower or higher to zoom in or out of 
+the solar image.
+
+the script then enters an input loop wherein the user is prompted to 
+enter the l, m, and n of the desired mode.  this final integer, the 
+radial order n, describes the behavior of the mode along the solar 
+radius.  for a surface view, it serves only to determine the ratio of 
+the vertical and horizontal components.
+
+next we must calculate the associated legendre polynomial.  this is 
+ultimately done by the function setplm(), which again is exactly the 
+same routine used for scientific analysis.  to find the Plm for a given 
+l and m, we start by using an explicit expression for the Plm with l=m, 
+and then use a recursion in l to find the Plm with the requested l.  
+hence, a total of l-m Plm's are actually calculated, along with their 
+corresponding derivatives.  to save on computing, these are all saved 
+for potential use in subsequent iterations of the loop.
+
+next we construction the spherical harmonic, Ylm, as well as its 
+derivative in both the theta and phi directions.  the derivative in the 
+theta direction gives the theta component, and dividing the derivative 
+in the phi direction by sin(theta) gives the phi component.  the radial 
+component is given directly by the Ylm.  in all cases, we must take the 
+real part to find the physically meaningful quantity.
+
+next, we read the vertical to horizontal ratio from a table.  this table 
+was extracted from a model using the function writesurfacemodel().  the 
+table contains both the magnitudes of the vertical and horizontal 
+components of the displacement at the solar surface as well as a 
+theoretical estimate of their ratio.  more details of the model are 
+provided in the next section.  the script drawharmonics.py arbitrarily 
+gives the vertical component (rc) a magnitude of 100 and sets the 
+magnitude of the horizontal component (hc) according to the theoretical 
+ratio.
+
+finally, the python dictionary varlist is populated with the six 
+plotting options: 
+Vr - radial or vertical component 
+Vt - theta or latitudinal component 
+Vp - phi or longitudinal component 
+Vh - magnitude of horizontal component, =sqrt(Vt^2+Vp^2) 
+Vmag - magnitude of total velocity, =sqrt(Vsq) 
+Vsq - magnitude squared, =(rc*Vr)^2+(hc*Vh)^2 
+note that Vr, Vt and Vp are signed quantities, while Vh, Vmag and Vsq 
+are strictly positive.  once the script terminates, all six quantities 
+will be available in varlist.
+
+unless the script was started with animate=0, the plot will be animated.  
+to do so, it uses the two functions defined at the top of the script.  
+the first, calcylmt(i), serves to evolve the mode in time.  to do so, it 
+require the arrays ylm, dylmt and dylmp to already exist.  the time 
+dependence is given by exp(-iwt), but rather than using the mode's 
+actual frequency, we simply set w=2pi/nframes so that the animation will 
+loop seamlessly. nframes is the total number of frames in the animation 
+and can be set when the script is called.  note that calcylmt(i) only 
+calculates the requested quantity for each frame, rather than the full 
+six which were calculated for the first frame.
+
+the second function needed for the animation, ylmanimate(i), simply 
+takes the array returned by calcylmt(i) and uses it to set the data for 
+a previously existing image instance.  this is the function that must be 
+passed to the matplotlib animation utility, and it is also called to 
+save frames to disk.
+
+we now move on to the script addharmonics.py, which as the name suggests 
+plots sums of modes.  it is a relatively straightforward extention of 
+the previous script, but the first notable difference is that the input 
+loop does not accept the list of modes to plot.  rather, this list is 
+set once at the beginning of the script.  that is, the user first enters 
+the number of modes, followed by the l, m and n of the desired modes.  
+the script then enters its input loop, wherein plotting parameters may 
+be changed.  in other words, to plot a new combination of modes, the 
+script must be rerun.
+
+for each mode, the Ylm and its derivatives are calculated as before and 
+the three resulting components are stored in lists.  the same table is 
+read to get the model values, but now the vertical (rc) and horizontal 
+(hc) magnitudes are used directy.  we will also scale the displacement 
+amplitudes by frequency (freq) to get the proper relative velocity 
+amplitudes.  these three parameters are likewise stored in lists.
+
+next the sums are performed and the six plotting variables are stored in 
+varlist as before.  now, however, when we animate the plot, we give each 
+mode in the sum its proper relative frequency.  in particular, we use 
+w=2pi*freq*freqscale/nframes, where freqscale is a parameter that can be 
+set when the script is called.  because the frequencies have already 
+been scaled to be in units of millihertz, the default value of freqscale 
+is 1/3.  in general, the animation will no longer loop seamlessly.  to 
+see the sum evolve further in time, one may increase freqscale.  one may 
+also wish to simultaneously increase nframes.  note that the animation 
+functions in this script are named calcsumt(i) and sumanimate(i).
+
+here we must insert a short discussion of colormaps.  for the signed 
+quantities Vr, Vt and Vp, we would typically like for the value of zero 
+to map to the center of the colormaps.  for a single mode, this is 
+almost always accomplished automatically, because the data range will 
+usually be symmetric around zero.  depending upon the orientation of the 
+solar image, however, certain modes (often those with m=0) will not 
+satisfy this requirement, perhaps leading to unexpected results.  to 
+correct this situation, by default we force the color mapping to be 
+symmetric around zero for the signed quantities.  this means that the 
+full range of the colormap will not be used.  to revert to automatic 
+scaling, one may specify colorshift=0 when starting the script.  the 
+default value is 1.  in either case, the color mapping is determined by 
+the data in the first frame.  this is adequate for single modes.  for 
+sums, however, it may happen that a subsequent frame will exceed the 
+data range of the first frame, in which case the colormap will saturate.  
+this is usually not a problem, but if one wishes to avoid this behavior, 
+one may specify colorshift=2.  in this case, the script will step 
+through calcsumt(i) for i in range(nframes) and find the full range of 
+possible data values in advance.  we may also add the capability to 
+change the range as the animation proceeds, but this is not yet fully 
+implemented.
+
+
+Section 3: Interior Views - drawradial.py and addradial.py
+
+these two scripts operate in close analogy to their surface 
+counterparts.  the most important difference is that these require a 
+much more extensive model for input.  in particular, the full radial 
+eigenfunctions must be read from a file, along the mesh on which they 
+were calculated.  the full eigenfunction actually consists of two 
+functions, one giving the amplitude of the displacement in the vertical 
+direction, and one giving the amplitude of the displacement in the 
+horizontal direction.  we call these two functions xir and xih 
+respectively, and they each depend on both spherical harmonic degree l 
+and radial order n.  finally, we will also need the background mass 
+density used to construct the model.
+
+all of this data has been packaged into an hdf file available from the 
+SoSH website: http://solar-center.stanford.edu/SoSH/#mods .  at the 
+beginning of each of these scripts, we call the function loadmodel(), 
+which reads the mesh and mass density used for the model, as well as the 
+l, n and frequency of all the modes in the model, and puts them in 
+global variables.  a second function, getradial(l, n), will return the 
+actual displacement eigenfunctions for the modes we wish to plot.
+
+after loadmodel(), the scripts call image2rtheta(), which returns the 
+arrays containing the r and theta coordinates for each point in the 
+image.  like its surface counterpart, this function can take as 
+arguments the number of pixels in the x and y directions (default 1000).  
+the only other paramter it can take, however, is distobs, the observer 
+distance in solar radii.  in other words, the orientation of the r-theta 
+plane is fixed.  distobs should in general be set to the same value used 
+for the surface views; in both cases it defaults to 220.  note, however, 
+that these scripts can take another parameter, rsurf, which is the 
+fractional image radius at which to truncate the model (default 1.0).  
+in some cases you may wish to remove the surface values if you find they 
+dominate the plots.  this will reduce the size of the area occupied by 
+the plot.
+
+as mentioned above, the radial eigenfunctions will be scaled by the mass 
+density.  for the value of phi in drawradial.py, we have arbitrarily 
+chosen pi/4m for the right half of the image, so that the real and 
+imaginary parts of the spherical harmonic (recall the factor of 
+exp(imphi)) will be the same.  this means that all three components will 
+be comparable.  of course, the value of phi on the left half of the 
+image will be pi/4m + pi.  for m=0, we set phi=0.  in addradial.py, we 
+set phi according to the first mode entered.
+

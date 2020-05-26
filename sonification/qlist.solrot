@@ -1,0 +1,14 @@
+samprate 16000;
+downfactor 6;
+numseries 3;
+mswitch 1;
+fileblank average.modes;
+instrument hmi bang;
+width 2.5;
+0 daylnm day 6328 l 20 n 15 m -20;
+0 dayindex 0;
+0 daylnm m 20;
+0 dayindex 72;
+0 daylnm m -20;
+0 daylnm m 20;
+0 dayindex 144;

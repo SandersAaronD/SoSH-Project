@@ -1,0 +1,17 @@
+samprate 12000;
+downfactor 8;
+numseries 4;
+mswitch 0
+instrument mdi bang;
+fileblank average.modes;
+width 50;
+0 daylnm day 6328 l 150 n 3 m 0;
+0 dayindex 0;
+0 daylnm day 6328 l 150 n 4 m 0;
+0 dayindex 72;
+0 daylnm day 6328 l 150 n 5 m 0;
+0 dayindex 144;
+0 daylnm day 6328 l 150 n 3 m 0;
+0 daylnm day 6328 l 150 n 4 m 0;
+0 daylnm day 6328 l 150 n 5 m 0;
+0 dayindex 216;

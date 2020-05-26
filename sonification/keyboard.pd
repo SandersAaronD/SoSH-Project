@@ -1,0 +1,35 @@
+#N canvas 778 338 748 690 10;
+#X floatatom 105 105 5 0 0 1 n - -, f 5;
+#X floatatom 155 105 8 0 0 1 Hz - -, f 8;
+#X obj 104 123 tgl 150 0 empty empty empty 17 7 0 10 -262144 -1 -1
+0 1;
+#X obj 104 273 bng 150 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 403 45 f \$1;
+#X obj 403 20 loadbang;
+#X obj 290 152 send;
+#X msg 310 122 symbol n\$1;
+#X obj 382 154 send;
+#X msg 402 124 symbol f\$1;
+#X obj 296 449 send;
+#X msg 316 419 symbol t\$1;
+#X obj 401 450 send;
+#X msg 421 420 symbol b\$1;
+#X obj 104 423 midi_learn;
+#X floatatom 234 105 3 0 0 0 - - -, f 3;
+#X connect 0 0 6 0;
+#X connect 1 0 8 0;
+#X connect 2 0 10 0;
+#X connect 3 0 12 0;
+#X connect 4 0 7 0;
+#X connect 4 0 9 0;
+#X connect 4 0 11 0;
+#X connect 4 0 13 0;
+#X connect 4 0 15 0;
+#X connect 5 0 4 0;
+#X connect 7 0 6 1;
+#X connect 9 0 8 1;
+#X connect 11 0 10 1;
+#X connect 13 0 12 1;
+#X connect 14 0 3 0;
+#X coords 0 -1 1 1 158 350 2 100 100;
